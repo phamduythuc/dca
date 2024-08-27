@@ -23,8 +23,8 @@
         <td mat-cell class="uppercase" *matCellDef="let element"> {{element.token}} </td>
       </ng-container>
       <ng-container matColumnDef="initial_token">
-        <th mat-header-cell *matHeaderCellDef> Số lượng token ban đầu </th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.initial_token | currencyUsd}} </td>
+        <th mat-header-cell *matHeaderCellDef>Token ban đầu </th>
+        <td mat-cell class="uppercase" *matCellDef="let element">{{element.initial_token + ' ' + element.token}} </td>
       </ng-container>
       <ng-container matColumnDef="original_purchase_price">
         <th mat-header-cell *matHeaderCellDef> Giá mua ban đầu </th>
@@ -39,8 +39,8 @@
         <td mat-cell class="uppercase" *matCellDef="let element"> {{element.investment_capital | currencyUsd}} </td>
       </ng-container>
       <ng-container matColumnDef="tokens_dca">
-        <th mat-header-cell *matHeaderCellDef> Số lượng token DCA</th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.tokens_dca}} </td>
+        <th mat-header-cell *matHeaderCellDef>Token DCA</th>
+        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.tokens_dca  + ' ' + element.token}} </td>
       </ng-container>
       <ng-container matColumnDef="price_dca">
         <th mat-header-cell *matHeaderCellDef> Số tiền DCA </th>
@@ -52,6 +52,10 @@
       </ng-container>
       <ng-container matColumnDef="total_investment_capital">
         <th mat-header-cell *matHeaderCellDef> Tổng vốn </th>
+        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.total_investment_capital | currencyUsd}} </td>
+      </ng-container>
+      <ng-container matColumnDef="total_investment_capital">
+        <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
         <td mat-cell class="uppercase" *matCellDef="let element"> {{element.total_investment_capital | currencyUsd}} </td>
       </ng-container>
       <ng-container matColumnDef="updateAt">
