@@ -35,9 +35,6 @@ export class AddOfEditItemComponent implements OnInit {
       this.listMarket = this.dcaService.searchMarkets(input)
       console.log(this.listMarket)
     })
-    this.formGroup.get('original_purchase_price')?.valueChanges.subscribe(res => {
-      console.log(+res)
-    })
   }
   getFocusout() {
     const valueNameToken = this.formGroup.value?.name_token;
@@ -45,12 +42,9 @@ export class AddOfEditItemComponent implements OnInit {
   }
 
   getPriceTokenInvest(value: string) {
-    console.log(value)
     this.dcaService.getPriceToken(value).subscribe(res => {
       if (res) {
         this.currentPrice = res.last
-        console.log(this.currentPrice)
-
       }
     })
   }
