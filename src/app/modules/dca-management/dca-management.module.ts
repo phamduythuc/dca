@@ -10,22 +10,38 @@ import { AddOfEditItemComponent } from './add-of-edit-item/add-of-edit-item.comp
 import {MatButtonModule} from "@angular/material/button";
 import {DialogModule} from "@angular/cdk/dialog";
 import {MatDialogModule} from "@angular/material/dialog";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatDividerModule} from "@angular/material/divider";
+import {ReactiveFormsModule} from "@angular/forms";
+import {HttpClientModule} from "@angular/common/http";
+import { AddDcaComponent } from './add-dca/add-dca.component';
+import { InforDcaComponent } from './infor-dca/infor-dca.component';
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 
 @NgModule({
   declarations: [
     ListTokenDcaComponent,
-    AddOfEditItemComponent
+    AddOfEditItemComponent,
+    AddDcaComponent,
+    InforDcaComponent
   ],
   imports: [
     CommonModule,
     DcaManagementRouting,
+    ReactiveFormsModule,
+    HttpClientModule,
     MatTableModule,
     SharedModule,
     MatMenuModule,
     MatIconModule,
     MatButtonModule,
-    MatDialogModule
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDividerModule,
+    MatAutocompleteModule
   ]
 })
 export class DcaManagementModule { }

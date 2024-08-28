@@ -1,8 +1,64 @@
-<div class="w-full px-6 py-4 shadow-lg shadow-gray-700">
-  <div class="flex items-center justify-between">
-    <h3>Create</h3>
-    <button mat-icon-button aria-label="Example icon button with a vertical three dot icon">
+<div [formGroup]="formGroup" class="w-full px-6 py-4 shadow-lg shadow-gray-700">
+  <div class="flex items-center justify-between mb-6">
+    <h3 class="text-base font-medium">Create</h3>
+    <button (click)="dialogRef.close(false)" mat-icon-button
+            aria-label="Example icon button with a vertical three dot icon">
       <mat-icon>close</mat-icon>
     </button>
+  </div>
+  <div class="w-full">
+    <div class="w-full gap-4 flex items-center mb-4">
+      <mat-form-field class="w-full" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input type="text" matInput formControlName="name_token" (focusout)="getFocusout()" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of listMarket" [value]="option.symbol">
+            {{option.symbol}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <mat-form-field class="w-full">
+        <mat-label>Tokens</mat-label>
+        <input matInput formControlName="initial_tokens" placeholder="Number token">
+      </mat-form-field>
+    </div>
+    <div class="w-full flex items-center">
+      <mat-form-field class="w-[calc(50%-8px)]">
+        <mat-label>Price Buy</mat-label>
+        <input matInput formControlName="original_purchase_price" placeholder="Price">
+      </mat-form-field>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="my-6 w-full flex flex-col space-y-4">
+    <div class="flex items-center justify-between">
+      <span>Tổng</span>
+      <span>{{formGroup.get('initial_tokens')?.value * formGroup.get('original_purchase_price')?.value | currencyUsd}}</span>
+    </div>
+    <div class="flex items-center justify-between">
+      <span>Cặp</span>
+      <span>{{formGroup.get('name_token')?.value | uppercasePipe}}</span>
+    </div>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <span>Giá hiện tại</span>
+        <button (click)="getPriceTokenInvest(formGroup.get('name_token')?.value)" mat-icon-button
+                aria-label="Example icon button with a vertical three dot icon">
+          <mat-icon>cached</mat-icon>
+        </button>
+      </div>
+      <span>{{this.currentPrice | currencyUsd}}</span>
+    </div>
+    <div class="flex items-center justify-between">
+      <span>Tình trạng</span>
+      <span
+        [ngClass]="{'text-emerald-600': (currentPrice - +formGroup.get('original_purchase_price')?.value) * formGroup.get('initial_tokens')?.value > 0, 'text-red-600' : (currentPrice - +formGroup.get('original_purchase_price')?.value) * formGroup.get('initial_tokens')?.value < 0, 'text-slate-900' : (currentPrice - +formGroup.get('original_purchase_price')?.value) * formGroup.get('initial_tokens')?.value === 0}"
+      >{{(currentPrice - +formGroup.get('original_purchase_price')?.value) * formGroup.get('initial_tokens')?.value| currencyUsd}}</span>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="mt-6 mb-2 w-full flex items-center justify-center space-x-4">
+    <button (click)="dialogRef.close(false)" mat-raised-button color="accent">Cancel</button>
+    <button mat-raised-button color="primary">Save</button>
   </div>
 </div>

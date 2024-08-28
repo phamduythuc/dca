@@ -3,11 +3,11 @@
     <h3 class="text-3xl text-gray-800 font-semibold">Danh sách quản lý token</h3>
     <div class="flex items-center space-x-3">
       <button mat-stroked-button color="accent">
-        <mat-icon>reload</mat-icon>
+        <mat-icon>refresh</mat-icon>
         Tải lại
       </button>
       <button (click)="createOfEdit(null)" mat-stroked-button color="primary">
-        <mat-icon>plus</mat-icon>
+        <mat-icon>add</mat-icon>
         Tạo
       </button>
     </div>
@@ -18,68 +18,87 @@
         <th mat-header-cell *matHeaderCellDef>STT</th>
         <td mat-cell *matCellDef="let element;"> {{element.id}} </td>
       </ng-container>
-      <ng-container matColumnDef="token">
-        <th mat-header-cell *matHeaderCellDef> Token </th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.token}} </td>
+      <ng-container matColumnDef="name_token">
+        <th mat-header-cell *matHeaderCellDef> Token</th>
+        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.name_token}} </td>
       </ng-container>
-      <ng-container matColumnDef="initial_token">
-        <th mat-header-cell *matHeaderCellDef>Token ban đầu </th>
-        <td mat-cell class="uppercase" *matCellDef="let element">{{element.initial_token + ' ' + element.token}} </td>
+      <ng-container matColumnDef="initial_tokens">
+        <th mat-header-cell *matHeaderCellDef>Token ban đầu</th>
+        <td mat-cell class="uppercase"
+            *matCellDef="let element">{{element.initial_tokens + ' ' + element.name_token}} </td>
       </ng-container>
       <ng-container matColumnDef="original_purchase_price">
-        <th mat-header-cell *matHeaderCellDef> Giá mua ban đầu </th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.original_purchase_price | currencyUsd}} </td>
+        <th mat-header-cell *matHeaderCellDef> Giá mua ban đầu</th>
+        <td mat-cell class="uppercase"
+            *matCellDef="let element"> {{element.original_purchase_price | currencyUsd}} </td>
       </ng-container>
       <ng-container matColumnDef="current_price">
         <th mat-header-cell *matHeaderCellDef> Giá hiện tại</th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.current_price | currencyUsd}} </td>
+        <td mat-cell class="uppercase"
+            [ngClass]="{ 'text-emerald-600': element.current_price > element.original_purchase_price, 'text-red-600': element.current_price < element.original_purchase_price }"
+            *matCellDef="let element"> {{element.current_price | currencyUsd}} </td>
       </ng-container>
       <ng-container matColumnDef="investment_capital">
-        <th mat-header-cell *matHeaderCellDef> vốn đầu tư </th>
+        <th mat-header-cell *matHeaderCellDef> vốn đầu tư</th>
         <td mat-cell class="uppercase" *matCellDef="let element"> {{element.investment_capital | currencyUsd}} </td>
       </ng-container>
       <ng-container matColumnDef="tokens_dca">
         <th mat-header-cell *matHeaderCellDef>Token DCA</th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.tokens_dca  + ' ' + element.token}} </td>
+        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.tokens_dca + ' ' + element.token}} </td>
       </ng-container>
       <ng-container matColumnDef="price_dca">
-        <th mat-header-cell *matHeaderCellDef> Số tiền DCA </th>
+        <th mat-header-cell *matHeaderCellDef> Số tiền DCA</th>
         <td mat-cell class="uppercase" *matCellDef="let element"> {{element.price_dca | currencyUsd}} </td>
       </ng-container>
       <ng-container matColumnDef="ave_price_dca">
-        <th mat-header-cell *matHeaderCellDef> Giá mua trung bình DCA </th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.ave_price_dca | currencyUsd}} </td>
+        <th mat-header-cell *matHeaderCellDef> Giá mua trung bình DCA</th>
+        <td mat-cell class="uppercase" *matCellDef="let element">
+          <div class="flex items-center space-x-3">
+            <span> {{element.ave_price_dca | currencyUsd}}</span>
+            <button (click)="viewInfoDca()" mat-icon-button aria-label="Example icon-button with a menu">
+              <mat-icon>list_alt</mat-icon>
+            </button>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="total_investment_capital">
-        <th mat-header-cell *matHeaderCellDef> Tổng vốn </th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.total_investment_capital | currencyUsd}} </td>
+        <th mat-header-cell *matHeaderCellDef> Tổng vốn</th>
+        <td mat-cell class="uppercase"
+            *matCellDef="let element"> {{element.total_investment_capital | currencyUsd}} </td>
       </ng-container>
-      <ng-container matColumnDef="total_investment_capital">
-        <th mat-header-cell *matHeaderCellDef> Trạng thái </th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.total_investment_capital | currencyUsd}} </td>
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="flex items-center space-x-3"
+               [ngClass]="{'text-emerald-600': element.status > 0, 'text-red-600' : element.status < 0, 'text-slate-900' :element.status === 0}">
+            <span
+            >{{element.status > 0 ? 'Lãi' : element.status < 0 ? 'Lỗ' : ''}}</span>
+            <span>{{element.status | currencyUsd}}</span>
+          </div>
+        </td>
       </ng-container>
       <ng-container matColumnDef="updateAt">
-        <th mat-header-cell *matHeaderCellDef> Update At </th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.updateAt}} </td>
+        <th mat-header-cell *matHeaderCellDef>Update At</th>
+        <td mat-cell class="" *matCellDef="let element"> {{element.updateAt}} </td>
       </ng-container>
       <ng-container matColumnDef="action">
-        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <th mat-header-cell *matHeaderCellDef>Action</th>
         <td mat-cell class="uppercase" *matCellDef="let element">
           <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
             <mat-icon>more_vert</mat-icon>
           </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item>
-              <mat-icon>dialpad</mat-icon>
-              <span>Redial</span>
+          <mat-menu #menu="matMenu" [xPosition]="'before'">
+            <button (click)="createOfEdit(element)" mat-menu-item>
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
             </button>
-            <button mat-menu-item disabled>
-              <mat-icon>voicemail</mat-icon>
-              <span>Check voice mail</span>
+            <button (click)="dcaToken(element)" mat-menu-item>
+              <mat-icon>show_chart</mat-icon>
+              <span>DCA</span>
             </button>
             <button mat-menu-item>
-              <mat-icon>notifications_off</mat-icon>
-              <span>Disable alerts</span>
+              <mat-icon>preview</mat-icon>
+              <span>View</span>
             </button>
           </mat-menu>
         </td>
