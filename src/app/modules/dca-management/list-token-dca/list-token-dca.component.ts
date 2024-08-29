@@ -3,6 +3,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {AddOfEditItemComponent} from "../add-of-edit-item/add-of-edit-item.component";
 import {AddDcaComponent} from "../add-dca/add-dca.component";
 import {InforDcaComponent} from "../infor-dca/infor-dca.component";
+import {DcaManagementService} from "../dca-management.service";
 
 @Component({
   selector: 'app-list-token-dca',
@@ -10,7 +11,7 @@ import {InforDcaComponent} from "../infor-dca/infor-dca.component";
   styleUrls: ['./list-token-dca.component.scss']
 })
 export class ListTokenDcaComponent implements OnInit {
-  constructor(private dialog: MatDialog) {
+  constructor(private dialog: MatDialog, private dcaService: DcaManagementService) {
   }
 
   dataTable = [
@@ -35,14 +36,15 @@ export class ListTokenDcaComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name_token', 'initial_tokens', 'original_purchase_price', 'current_price', 'investment_capital', 'tokens_dca', 'price_dca', 'ave_price_dca', 'total_investment_capital', 'status', 'updateAt', 'action'];
 
   ngOnInit() {
-    this.dataTable.map(item => {
-      return {
-        ...item,
-        investment_capital: item.initial_tokens * item.original_purchase_price,
-        price_dca: item.tokens_dca * item.price_current_dca,
-        ave_price_dca: (item.initial_tokens * item.original_purchase_price) + (item.tokens_dca * item.price_current_dca)
-      }
-    })
+    // this.dataTable.map(item => {
+    //   return {
+    //     ...item,
+    //     investment_capital: item.initial_tokens * item.original_purchase_price,
+    //     price_dca: item.tokens_dca * item.price_current_dca,
+    //     ave_price_dca: (item.initial_tokens * item.original_purchase_price) + (item.tokens_dca * item.price_current_dca)
+    //   }
+    // })
+    this.loadTokens()
   }
 
   createOfEdit(data: any) {
@@ -70,6 +72,22 @@ export class ListTokenDcaComponent implements OnInit {
       },
       panelClass: ['w-[40%]', 'rounded-lg']
     })
+  }
+   loadTokens() {
+   this.dcaService.getListTokensInvest().subscribe(res => {
+     console.log(res)
+     if (res) {
+       this.dataTable = res.map((item: any) => {
+         return {
+           ...item,
+           investment_capital: item.initial_tokens * item.original_purchase_price,
+           price_dca: item.tokens_dca * item.price_current_dca,
+           ave_price_dca: (item.initial_tokens * item.original_purchase_price) + (item.tokens_dca * item.price_current_dca),
+           updateAt: new  Date(item.updateAt).toLocaleString()
+         }
+       })
+     }
+   })
   }
 
 }

@@ -31,11 +31,12 @@ export class AddOfEditItemComponent implements OnInit {
       this.getPriceTokenInvest(this.formGroup.value?.name_token);
     }
     this.dcaService.loadMarkerBinance();
-    this.formGroup.get('name_token')?.valueChanges.pipe(debounceTime(300),   distinctUntilChanged()).subscribe(input => {
+    this.formGroup.get('name_token')?.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe(input => {
       this.listMarket = this.dcaService.searchMarkets(input)
       console.log(this.listMarket)
     })
   }
+
   getFocusout() {
     const valueNameToken = this.formGroup.value?.name_token;
     this.getPriceTokenInvest(valueNameToken);
@@ -47,6 +48,23 @@ export class AddOfEditItemComponent implements OnInit {
         this.currentPrice = res.last
       }
     })
+  }
+
+  saveData() {
+    const obj = {
+      ...this.formGroup.value,
+      price_dca: null,
+      tokens_dca: null,
+      updateAt: new Date().getTime()
+    }
+    if (this.dataResult) {
+      this.dcaService.updateTokenData(this.dataResult.id, obj).subscribe(res => {
+        console.log(res)
+      })
+    } else {
+      this.dcaService.addDataToken(obj).subscribe(res => {
+      })
+    }
   }
 
 }

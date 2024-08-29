@@ -2,7 +2,7 @@
   <div class="w-full flex items-center justify-between mb-4 px-4">
     <h3 class="text-3xl text-gray-800 font-semibold">Danh sách quản lý token</h3>
     <div class="flex items-center space-x-3">
-      <button mat-stroked-button color="accent">
+      <button (click)="loadTokens()" mat-stroked-button color="accent">
         <mat-icon>refresh</mat-icon>
         Tải lại
       </button>
@@ -16,7 +16,7 @@
     <table mat-table [dataSource]="dataTable" class="mat-elevation-z8">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef>STT</th>
-        <td mat-cell *matCellDef="let element;"> {{element.id}} </td>
+        <td mat-cell *matCellDef="let element; let i = index"> {{i + 1}} </td>
       </ng-container>
       <ng-container matColumnDef="name_token">
         <th mat-header-cell *matHeaderCellDef> Token</th>
@@ -44,11 +44,11 @@
       </ng-container>
       <ng-container matColumnDef="tokens_dca">
         <th mat-header-cell *matHeaderCellDef>Token DCA</th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.tokens_dca + ' ' + element.token}} </td>
+        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.tokens_dca ? element.tokens_dca + ' ' + element.name_token : 0}} </td>
       </ng-container>
       <ng-container matColumnDef="price_dca">
         <th mat-header-cell *matHeaderCellDef> Số tiền DCA</th>
-        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.price_dca | currencyUsd}} </td>
+        <td mat-cell class="uppercase" *matCellDef="let element"> {{element.price_dca ? element.price_dca : 0 | currencyUsd}} </td>
       </ng-container>
       <ng-container matColumnDef="ave_price_dca">
         <th mat-header-cell *matHeaderCellDef> Giá mua trung bình DCA</th>

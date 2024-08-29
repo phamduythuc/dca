@@ -24,15 +24,15 @@
       <div class="flex items-center justify-between space-y-2">
         <div>
           <span class="text-base font-medium mb-2" *ngIf="i === 0">Tokens</span>
-          <div>{{item.tokens}}</div>
+          <div>{{item.tokens_dca}}</div>
         </div>
         <div>
           <span class="text-base font-medium mb-2" *ngIf="i === 0">Price</span>
-          <div>{{item.price}}</div>
+          <div>{{item.price_current_dca}}</div>
         </div>
         <div>
           <span class="text-base font-medium mb-2" *ngIf="i === 0">Time</span>
-          <div>{{item.time}}</div>
+          <div>{{item.updateAt}}</div>
         </div>
       </div>
     </div>
@@ -41,7 +41,7 @@
   <div class="my-6 w-full flex flex-col space-y-4">
     <div class="flex items-center justify-between">
       <span>Giá mua trung bình</span>
-      <span>{{formGroup.get('initial_tokens')?.value * formGroup.get('original_purchase_price')?.value | currencyUsd}}</span>
+      <span>{{averagePrice}}</span>
     </div>
     <div class="flex items-center justify-between">
       <span>Tổng số tiền DCA</span>
@@ -51,6 +51,6 @@
   <mat-divider></mat-divider>
   <div class="mt-6 mb-2 w-full flex items-center justify-center space-x-4">
     <button (click)="dialogRef.close(false)" mat-raised-button color="accent">Cancel</button>
-    <button mat-raised-button color="primary">Save</button>
+    <button (click)="saveData()" mat-raised-button color="primary">Save</button>
   </div>
 </div>
