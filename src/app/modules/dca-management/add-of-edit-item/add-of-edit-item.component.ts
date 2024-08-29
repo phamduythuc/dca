@@ -53,6 +53,8 @@ export class AddOfEditItemComponent implements OnInit {
   saveData() {
     const obj = {
       ...this.formGroup.value,
+      initial_tokens: +this.formGroup.value.initial_tokens,
+      original_purchase_price: +this.formGroup.value.original_purchase_price,
       price_dca: null,
       tokens_dca: null,
       updateAt: new Date().getTime()

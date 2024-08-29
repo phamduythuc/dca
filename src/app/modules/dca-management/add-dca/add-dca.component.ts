@@ -68,7 +68,8 @@ export class AddDcaComponent implements OnInit {
 
   saveData() {
     const obj = {
-      ...this.formGroup.value,
+      tokens_dca: +this.formGroup.value.tokens_dca,
+      price_current_dca: +this.formGroup.value.price_current_dca,
       updateAt: new Date().getTime()
     }
     this.dcaService.addDcaToken(obj, this.dataResult.id).subscribe(res => {
