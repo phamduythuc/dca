@@ -4,6 +4,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {DcaManagementService} from "../dca-management.service";
 import {concatMap, forkJoin, map} from "rxjs";
 import {DCA} from "../../../../data/interface/token";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-add-dca',
@@ -13,7 +14,7 @@ import {DCA} from "../../../../data/interface/token";
 export class AddDcaComponent implements OnInit {
   dataResult: any;
 
-  constructor(private fb: FormBuilder, @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AddDcaComponent>, private dcaService: DcaManagementService) {
+  constructor(private fb: FormBuilder, @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AddDcaComponent>, private dcaService: DcaManagementService, private snackBar: MatSnackBar) {
     this.dataResult = this.data?.data;
   }
 
@@ -32,7 +33,6 @@ export class AddDcaComponent implements OnInit {
 
   getListDCA() {
     this.dcaService.getDcaHistory(this.dataResult?.id).subscribe(res => {
-      console.log(res)
       this.dataDca = res.map(item => {
         return {
           ...item,
@@ -65,18 +65,17 @@ export class AddDcaComponent implements OnInit {
       updateAt: new Date().getTime()
     }
     this.dataDca.push(obj)
-    console.log(this.dataDca)
     this.averagePrice = this.calculateAveragePrice(this.dataDca);
     const calcDCA = {
       ave_price_dca: this.averagePrice,
       price_dca: this.totalCost,
       tokens_dca: this.totalQuantity
     }
-    console.log(calcDCA)
-    console.log(this.averagePrice)
-    this.dcaService.addDcaToken(obj, this.dataResult?.id).pipe(concatMap(res => this.dcaService.updateTokenData(this.dataResult?.id,calcDCA))).subscribe(res => {
+
+    this.dcaService.addDcaToken(obj, this.dataResult?.id).pipe(concatMap(res => this.dcaService.updateTokenData(this.dataResult?.id, calcDCA))).subscribe(res => {
+      this.snackBar.open('DCA success', 'success');
       this.dialogRef.close(true);
-    })
+    });
 
 
   }

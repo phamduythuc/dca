@@ -4,6 +4,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import ccxt from "ccxt";
 import {DcaManagementService} from "../dca-management.service";
 import {debounceTime, distinctUntilChanged} from "rxjs";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-add-of-edit-item',
@@ -13,7 +14,7 @@ import {debounceTime, distinctUntilChanged} from "rxjs";
 export class AddOfEditItemComponent implements OnInit {
   dataResult: any;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AddOfEditItemComponent>, private fb: FormBuilder, private dcaService: DcaManagementService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AddOfEditItemComponent>, private fb: FormBuilder, private dcaService: DcaManagementService, private snackBar: MatSnackBar) {
     this.dataResult = this.data?.data;
   }
 
@@ -61,12 +62,14 @@ export class AddOfEditItemComponent implements OnInit {
     if (this.dataResult) {
       this.dcaService.updateTokenData(this.dataResult.id, obj).subscribe(res => {
         if (res) {
+          this.snackBar.open('Save token success');
           this.dialogRef.close(true)
         }
       })
     } else {
       this.dcaService.addDataToken(obj).subscribe(res => {
         if (res) {
+          this.snackBar.open('Create token success');
           this.dialogRef.close(true)
         }
       })
