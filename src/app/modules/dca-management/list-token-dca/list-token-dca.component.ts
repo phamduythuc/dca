@@ -92,7 +92,8 @@ export class ListTokenDcaComponent implements OnInit {
       data: {
         title: 'Delete Token',
         content: 'Are you sure you want to delete token'
-      }
+      },
+      panelClass: ['w-[30%]']
     }).afterClosed().subscribe((result : boolean) => {
       if (result) {
         this.dcaService.deleteToken(id).subscribe(res => {
