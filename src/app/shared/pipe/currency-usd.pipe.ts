@@ -12,7 +12,7 @@ export class CurrencyUsdPipe implements PipeTransform {
     const formattedValue = value.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2, // Số chữ số sau dấu phẩy
+      minimumFractionDigits: 0, // Số chữ số sau dấu phẩy
     });
 
     return symbol + formattedValue.replace('$', ''); // Thay thế ký hiệu $ mặc định nếu có

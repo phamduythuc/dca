@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {from, fromEvent, map, Observable} from "rxjs";
 import ccxt from "ccxt";
-import {getFirestore, collection, getDocs, addDoc, doc, getDoc, updateDoc} from 'firebase/firestore/lite';
+import {getFirestore, collection, getDocs, addDoc, doc, getDoc, updateDoc, deleteDoc} from 'firebase/firestore/lite';
 import { initializeApp } from "firebase/app";
 
 import {environment} from "../../../environments/environment";
@@ -52,6 +52,10 @@ export class DcaManagementService {
   updateTokenData(documentId: string, updatedData: any): Observable<any> {
     const tokenDocRef = doc(this.db, 'list-token', documentId);  // Tạo reference đến document bằng documentId
     return from(updateDoc(tokenDocRef, updatedData));  // Update document với dữ liệu mới
+  }
+  deleteToken(documentId: string): Observable<any> {
+    const tokenDocRef = doc(this.db, `list-token`, documentId)
+    return from(deleteDoc(tokenDocRef))
   }
 
   getDcaHistory(documentId: string): Observable<any[]> {

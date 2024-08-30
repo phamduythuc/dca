@@ -33,7 +33,6 @@ export class AddOfEditItemComponent implements OnInit {
     this.dcaService.loadMarkerBinance();
     this.formGroup.get('name_token')?.valueChanges.pipe(debounceTime(300), distinctUntilChanged()).subscribe(input => {
       this.listMarket = this.dcaService.searchMarkets(input)
-      console.log(this.listMarket)
     })
   }
 
@@ -61,10 +60,15 @@ export class AddOfEditItemComponent implements OnInit {
     }
     if (this.dataResult) {
       this.dcaService.updateTokenData(this.dataResult.id, obj).subscribe(res => {
-        console.log(res)
+        if (res) {
+          this.dialogRef.close(true)
+        }
       })
     } else {
       this.dcaService.addDataToken(obj).subscribe(res => {
+        if (res) {
+          this.dialogRef.close(true)
+        }
       })
     }
   }

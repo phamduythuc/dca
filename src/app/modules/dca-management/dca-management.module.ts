@@ -18,6 +18,7 @@ import {HttpClientModule} from "@angular/common/http";
 import { AddDcaComponent } from './add-dca/add-dca.component';
 import { InforDcaComponent } from './infor-dca/infor-dca.component';
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
     MatFormFieldModule,
     MatInputModule,
     MatDividerModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatSnackBarModule
   ]
 })
 export class DcaManagementModule { }

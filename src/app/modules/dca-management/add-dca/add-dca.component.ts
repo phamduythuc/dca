@@ -2,6 +2,8 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {DcaManagementService} from "../dca-management.service";
+import {concatMap, forkJoin, map} from "rxjs";
+import {DCA} from "../../../../data/interface/token";
 
 @Component({
   selector: 'app-add-dca',
@@ -15,18 +17,9 @@ export class AddDcaComponent implements OnInit {
     this.dataResult = this.data?.data;
   }
 
-  dataDca: any = [
-    // {
-    //   tokens: 200,
-    //   price: 2,
-    //   time: new Date().toDateString()
-    // },
-    // {
-    //   tokens: 200,
-    //   price: 2,
-    //   time: new Date().toDateString()
-    // }
-  ]
+  totalQuantity: number = 0;
+  totalCost: number = 0;
+  dataDca: DCA[] = []
   formGroup: FormGroup = this.fb.group({
     tokens_dca: [0, [Validators.required, Validators.min(0)]],
     price_current_dca: [0, [Validators.required, Validators.min(0)]]
@@ -51,17 +44,16 @@ export class AddDcaComponent implements OnInit {
   }
 
   calculateAveragePrice(dcaList: any) {
-    let totalCost = 0;       // Tổng chi phí
-    let totalQuantity = 0;   // Tổng số lượng token
-
+    this.totalQuantity = 0;
+    this.totalCost = 0
     // Duyệt qua danh sách các lần DCA để tính tổng chi phí và tổng số lượng token
     dcaList.forEach((entry: any) => {
-      totalCost += entry.tokens_dca * entry.price_current_dca; // Tính tổng chi phí
-      totalQuantity += entry.tokens_dca;           // Tính tổng số lượng token
+      this.totalCost += entry.tokens_dca * entry.price_current_dca; // Tính tổng chi phí
+      this.totalQuantity += entry.tokens_dca;           // Tính tổng số lượng token
     });
 
     // Tính giá trung bình
-    const averagePrice = totalCost / totalQuantity;
+    const averagePrice = this.totalCost / this.totalQuantity;
 
     return +averagePrice.toFixed(3);
   }
@@ -72,9 +64,20 @@ export class AddDcaComponent implements OnInit {
       price_current_dca: +this.formGroup.value.price_current_dca,
       updateAt: new Date().getTime()
     }
-    this.dcaService.addDcaToken(obj, this.dataResult.id).subscribe(res => {
-      console.log(res)
-      this.getListDCA()
+    this.dataDca.push(obj)
+    console.log(this.dataDca)
+    this.averagePrice = this.calculateAveragePrice(this.dataDca);
+    const calcDCA = {
+      ave_price_dca: this.averagePrice,
+      price_dca: this.totalCost,
+      tokens_dca: this.totalQuantity
+    }
+    console.log(calcDCA)
+    console.log(this.averagePrice)
+    this.dcaService.addDcaToken(obj, this.dataResult?.id).pipe(concatMap(res => this.dcaService.updateTokenData(this.dataResult?.id,calcDCA))).subscribe(res => {
+      this.dialogRef.close(true);
     })
+
+
   }
 }

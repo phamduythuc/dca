@@ -4,6 +4,10 @@ import {AddOfEditItemComponent} from "../add-of-edit-item/add-of-edit-item.compo
 import {AddDcaComponent} from "../add-dca/add-dca.component";
 import {InforDcaComponent} from "../infor-dca/infor-dca.component";
 import {DcaManagementService} from "../dca-management.service";
+import {concatMap, forkJoin, map} from "rxjs";
+import {ComfirmDialogComponent} from "../../../shared/components/comfirm-dialog/comfirm-dialog.component";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {Token} from "../../../../data/interface/token";
 
 @Component({
   selector: 'app-list-token-dca',
@@ -11,83 +15,94 @@ import {DcaManagementService} from "../dca-management.service";
   styleUrls: ['./list-token-dca.component.scss']
 })
 export class ListTokenDcaComponent implements OnInit {
-  constructor(private dialog: MatDialog, private dcaService: DcaManagementService) {
+  constructor(private dialog: MatDialog, private dcaService: DcaManagementService, private snackBar: MatSnackBar) {
   }
 
-  dataTable = [
-    {
-      id: 1,
-      name_token: 'strk',
-      initial_tokens: 200,
-      original_purchase_price: 2,
-      current_price: 4,
-      investment_capital: 80,
-      tokens_dca: 123,
-      price_current_dca: 1,
-      price_dca: 2,
-      ave_price_dca: 212,
-      total_investment_capital: 233,
-      status: 2232,
-      updateAt: new Date().toDateString(),
-
-    }
-  ]
+  dataTable: Token[] = []
   // displayedColumns: string[] = ['id', 'token', 'initial_token'];
   displayedColumns: string[] = ['id', 'name_token', 'initial_tokens', 'original_purchase_price', 'current_price', 'investment_capital', 'tokens_dca', 'price_dca', 'ave_price_dca', 'total_investment_capital', 'status', 'updateAt', 'action'];
 
   ngOnInit() {
-    // this.dataTable.map(item => {
-    //   return {
-    //     ...item,
-    //     investment_capital: item.initial_tokens * item.original_purchase_price,
-    //     price_dca: item.tokens_dca * item.price_current_dca,
-    //     ave_price_dca: (item.initial_tokens * item.original_purchase_price) + (item.tokens_dca * item.price_current_dca)
-    //   }
-    // })
     this.loadTokens()
   }
 
-  createOfEdit(data: any) {
+  createOfEdit(data: Token | null) {
     console.log(data)
     this.dialog.open(AddOfEditItemComponent, {
       data: {
         data: data
       },
       panelClass: ['w-[65%]', 'rounded-2xl']
+    }).afterClosed().subscribe((result: boolean) => {
+      if (result) this.loadTokens();
     })
   }
 
-  dcaToken(data: any) {
+  dcaToken(data: Token) {
     this.dialog.open(AddDcaComponent, {
       data: {
         data: data
       },
       panelClass: ['w-[50%]', 'rounded-2xl']
+    }).afterClosed().subscribe((result :boolean) => {
+      if (result) {
+        this.loadTokens();
+      }
     })
   }
+
   viewInfoDca() {
     this.dialog.open(InforDcaComponent, {
-      data: {
-
-      },
+      data: {},
       panelClass: ['w-[40%]', 'rounded-lg']
     })
   }
-   loadTokens() {
-   this.dcaService.getListTokensInvest().subscribe(res => {
-     console.log(res)
-     if (res) {
-       this.dataTable = res.map((item: any) => {
-         return {
-           ...item,
-           investment_capital: item.initial_tokens * item.original_purchase_price,
-           price_dca: item.tokens_dca * item.price_current_dca,
-           ave_price_dca: (item.initial_tokens * item.original_purchase_price) + (item.tokens_dca * item.price_current_dca),
-           updateAt: new  Date(item.updateAt).toLocaleString()
-         }
-       })
-     }
-   })
+
+  loadTokens() {
+    this.dcaService.getListTokensInvest().subscribe((tokens :Token[]) => {
+      const priceRequests = tokens.map((token: Token) =>
+        this.dcaService.getPriceToken(token.name_token).pipe(
+          map(priceResponse => {
+            const total_capital = token?.price_dca ? token.price_dca : token.initial_tokens * token.original_purchase_price
+            const checkDca = token?.tokens_dca ? token.tokens_dca : token.initial_tokens;
+          return{
+            ...token,
+            initial_tokens_display: token?.initial_tokens + ' ' + token?.name_token.split('/')[0],
+            current_price: priceResponse.last , // Thêm thuộc tính current_price
+            current_price_class:  priceResponse.last > token?.original_purchase_price ? 'text-emerald-600' :  priceResponse.last < token?.original_purchase_price ? 'text-red-600' : 'text-slate-900',
+            price_dca_display: token?.price_dca ? +(+token?.price_dca - +token?.original_purchase_price).toFixed(3): 0,
+            token_dca_display: token?.tokens_dca ? `${token?.tokens_dca} ${token?.name_token.split('/')[0]}` : `${0} ${token?.name_token.split('/')[0]}`,
+            ave_price_dca_display: token?.ave_price_dca ? token?.ave_price_dca : 0 ,
+            investment_capital: token.initial_tokens * token.original_purchase_price,
+            total_capital: total_capital,
+            status: (checkDca * priceResponse.last) - total_capital,
+            updateAt: new Date(token.updateAt).toLocaleString(), // Giữ nguyên các thuộc tính của token
+          }})
+        )
+      );
+
+      forkJoin(priceRequests).subscribe((updatedTokens: Token[]) => {
+        this.dataTable = updatedTokens;  // Cập nhật danh sách token với giá hiện tại
+        console.log(this.dataTable);
+      });
+    });
+  }
+  deleteToken(id: string) {
+    this.dialog.open(ComfirmDialogComponent, {
+      data: {
+        title: 'Delete Token',
+        content: 'Are you sure you want to delete token'
+      }
+    }).afterClosed().subscribe((result : boolean) => {
+      if (result) {
+        this.dcaService.deleteToken(id).subscribe(res => {
+          if (res) {
+            this.snackBar.open('Delete success', 'success');
+            this.loadTokens();
+          }
+        })
+      }
+    })
   }
 
 }
